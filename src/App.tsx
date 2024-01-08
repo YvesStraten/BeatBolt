@@ -7,14 +7,15 @@ const App = () => {
 	const [ytLinks, setYtLinks] = useState<String[]>([]);
 	const [spotLinks, setSpotLinks] = useState<String[]>([]);
 
-	const [mode, setMode] = useState("spot");
+	const [mode, setMode] = useState<String>("spot");
+
 	return (
 		<>
 			<div id="main_container">
-				<div className="selector" onClick={() => setMode("spot")}>
+				<div className={mode === "spot" ? "selector selected" : "selector"} onClick={() => setMode("spot")}>
 					<h1>SpotDL</h1>
 				</div>
-				<div className="selector" onClick={() => setMode("yt")}>
+				<div className={mode === "yt" ? "selector selected" : "selector"} onClick={() => setMode("yt")}>
 					<h1 >Yt-dlp</h1>
 				</div>
 

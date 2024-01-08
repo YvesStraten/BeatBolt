@@ -1,7 +1,10 @@
+import { faX } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { invoke } from "@tauri-apps/api";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/api/notification";
 import { downloadDir } from "@tauri-apps/api/path";
 import { useState } from "react";
+import Progress from "./Progress";
 
 type formType = {
 	Links: String[],
@@ -24,7 +27,6 @@ const Form = ({ Links, setLinks, mode }: formType) => {
 
 	const deleteItem = (link: String) => {
 		setLinks(Links.filter((item: String) => item !== link))
-
 	}
 
 	const sendNotif = async (currentItem: number, allItems: number) => {
@@ -34,7 +36,7 @@ const Form = ({ Links, setLinks, mode }: formType) => {
 			permissionGranted = permission === 'granted';
 		}
 		if (permissionGranted) {
-			sendNotification({ title: 'Download progress', body: `Download ${currentItem}/${allItems}` });
+			sendNotification({ title: 'Download progress', body: `Download ${currentItem}/${allItems}`, icon: "../../src-tauri/icons/32x32.png" });
 		}
 	}
 
@@ -63,21 +65,30 @@ const Form = ({ Links, setLinks, mode }: formType) => {
 	}
 
 	/* 						TODO: add a way to extract audio with yt-dlp */
+/* 	TODO: add progress bars */
 	return (
 		<>
-			<input type="text" placeholder="Link to playlist or song" onChange={(e) => updateInput(e.target.value)}></input>
+			<input type="text" placeholder="Link to playlist or song" value={input} onChange={(e) => updateInput(e.target.value)}></input>
 			<button onClick={() => updateLinks()}>Submit</button>
 
 			<h1>Queue</h1>
-			<ol>
+			<ul>
 				{Links.map((link: any) => (
 					<>
-						<li key={link}>{link}</li>
-						<button key={link} onClick={() => deleteItem(link)}>X</button>
+						<li key={link}><a href={link}>{link}</a></li>
+						<button key={link} onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX}/></button>
+						<Progress />
+						{mode === "yt" ? 
+						<>
+						<input type="checkbox" id="audiox"></input>
+						<label htmlFor="audiox">Extract audio</label>
+						</>
+						: <></>
+						}
 					</>)
 				)}
 
-			</ol>
+			</ul>
 			<button onClick={() => download()}>Download!</button>
 			<button onClick={() => setLinks([])}>Clear queue!</button>
 
