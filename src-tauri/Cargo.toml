@@ -1,8 +1,8 @@
 [package]
-name = "spotgui"
-version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+name = "beatbolt"
+version = "0.0.1"
+description = "An app to download with yt-dlp or spotdl"
+authors = ["Yves Straten"]
 license = ""
 repository = ""
 edition = "2021"

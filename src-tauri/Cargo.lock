@@ -3,6 +3,17 @@
 version = 3
 
 [[package]]
+name = "BeatBolt"
+version = "0.0.1"
+dependencies = [
+ "fix-path-env",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3011,17 +3022,6 @@ dependencies = [
  "gobject-sys",
  "libc",
  "system-deps 5.0.0",
-]
-
-[[package]]
-name = "spotgui"
-version = "0.0.0"
-dependencies = [
- "fix-path-env",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
 ]
 
 [[package]]

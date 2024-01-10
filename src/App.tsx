@@ -1,30 +1,52 @@
 import { useState } from "react";
 import "./App.css";
 import Form from "./components/Form";
+import Queue from "./components/Queue";
 
 const App = () => {
+	const [Links, setLinks] = useState<string[]>([]);
 
-	const [ytLinks, setYtLinks] = useState<String[]>([]);
-	const [spotLinks, setSpotLinks] = useState<String[]>([]);
+	const [mode, setMode] = useState<string>("spot");
+	const [selected, setSelected] = useState<string>("");
 
-	const [mode, setMode] = useState<String>("spot");
+	const selectHandler = (selector: string) => {
+		switch (selector) {
+			case "spot":
+				setMode("spot");
+				setSelected("spot");
+				break;
 
+			case "yt":
+				setMode("yt");
+				setSelected("yt");
+				break;
+
+			case "queue":
+				setSelected("queue")
+				break;
+		}
+
+	}
 	return (
 		<>
-			<div id="main_container">
-				<div className={mode === "spot" ? "selector selected" : "selector"} onClick={() => setMode("spot")}>
-					<h1>SpotDL</h1>
-				</div>
-				<div className={mode === "yt" ? "selector selected" : "selector"} onClick={() => setMode("yt")}>
-					<h1 >Yt-dlp</h1>
-				</div>
+			<nav>
+				<div id="main_container">
+					<div className={selected === "spot" ? "selector selected" : "selector"} onClick={() => selectHandler("spot")}>
+						<h1>SpotDL</h1>
+					</div>
+					<div className={selected === "yt" ? "selector selected" : "selector"} onClick={() => selectHandler("yt")}>
+						<h1 >Yt-dlp</h1>
+					</div>
 
-			</div>
+					<div className={selected === "queue" ? "selector selected" : "selector"} onClick={() => selectHandler("queue")}>
+						<h1>Queue</h1>
+					</div>
+				</div>
+			</nav>
+			<hr id="rule" />
 
-			<div className="input">
-				{mode === "spot" ?
-					<Form Links={spotLinks} setLinks={setSpotLinks} mode={mode} /> : <Form Links={ytLinks} setLinks={setYtLinks} mode={mode} />}
-			</div>
+			{selected === "queue" ? <Queue Links={Links} setLinks={setLinks} mode={mode} /> : <Form Links={Links} setLinks={setLinks} mode={mode} />}
+
 		</>
 	)
 }

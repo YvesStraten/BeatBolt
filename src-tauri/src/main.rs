@@ -3,12 +3,6 @@
 
 use std::process::Command;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[tauri::command(async)]
 fn download(link: &str, case: u32, path: &str) -> String {
     if case == 0 {
@@ -17,21 +11,20 @@ fn download(link: &str, case: u32, path: &str) -> String {
             .current_dir(&path)
             .output()
             .expect("did not work");
+        format!("done")
     } else {
         Command::new("yt-dlp")
             .arg(&link)
             .current_dir(&path)
             .output()
             .expect("did not work");
+        format!("done")
     }
-
-    format!("Download {link} complete!")
 }
 
 fn main() {
     let _ = fix_path_env::fix();
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
         .invoke_handler(tauri::generate_handler![download])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

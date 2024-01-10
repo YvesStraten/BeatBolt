@@ -9,14 +9,14 @@ import ProgressBar from "@ramonak/react-progress-bar";
 
 const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
 
-	const [ downloadStatus, setStatus ] = useState<boolean[]>(
-	new Array(Links.length).fill(false)
+	const [downloadStatus, setStatus] = useState<boolean[]>(
+		new Array(Links.length).fill(false)
 	)
 
 	const statusHandler = (index: number) => {
-const updatedCheckedState = downloadStatus.map((item: boolean, position: number) =>
-      position === index ? !item : item
-    );	
+		const updatedCheckedState = downloadStatus.map((item: boolean, position: number) =>
+			position === index ? !item : item
+		);
 		setStatus(updatedCheckedState);
 		console.log(downloadStatus);
 	}
@@ -32,7 +32,7 @@ const updatedCheckedState = downloadStatus.map((item: boolean, position: number)
 		console.log(dir);
 		for (let i = 0; i <= Links.length - 1; i++) {
 			if (mode === "spot") {
-				invoke('download', { link: `${Links[i]}`, case: 0, path: `${dir}`})
+				invoke('download', { link: `${Links[i]}`, case: 0, path: `${dir}` })
 					.then((response) => {
 						console.log(response)
 						sendNotif(i + 1, Links.length)
@@ -40,7 +40,7 @@ const updatedCheckedState = downloadStatus.map((item: boolean, position: number)
 					})
 			} else {
 
-				invoke('download', { link: `${Links[i]}`, case: 1, path: `${dir}`})
+				invoke('download', { link: `${Links[i]}`, case: 1, path: `${dir}` })
 					// `invoke` returns a Promise
 					.then((response) => {
 						console.log(response)
@@ -50,53 +50,52 @@ const updatedCheckedState = downloadStatus.map((item: boolean, position: number)
 			}
 		}
 
-	const sendNotif = async (currentItem: number, allItems: number) => {
-		let permissionGranted = await isPermissionGranted();
-		if (!permissionGranted) {
-			const permission = await requestPermission();
-			permissionGranted = permission === 'granted';
+		const sendNotif = async (currentItem: number, allItems: number) => {
+			let permissionGranted = await isPermissionGranted();
+			if (!permissionGranted) {
+				const permission = await requestPermission();
+				permissionGranted = permission === 'granted';
+			}
+			if (permissionGranted) {
+				sendNotification({ title: 'Download progress', body: `Download ${currentItem}/${allItems}`, icon: "../../src-tauri/icons/32x32.png", sound: "default" });
+			}
 		}
-		if (permissionGranted) {
-			sendNotification({ title: 'Download progress', body: `Download ${currentItem}/${allItems}`, icon: "../../src-tauri/icons/32x32.png" });
-		}
+
 	}
 
-	}
-
-		return(
-			<div className="input">
-
+	return (
+		<div className="input">
 			<ul>
 
 				{Links.map((link: any, index: number) => {
-		if(downloadStatus[index] === true){
+					if (downloadStatus[index] === true) {
 						console.log(`Progress 100% with index ${downloadStatus[index]}`)
-				return (
-					<>
-						<li key={link}><a href={link}>{link}</a></li>
-						<button key={link} onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
-								<ProgressBar className="wrapper" 
+						return (
+							<>
+								<li key={link}><a href={link}>{link}</a></li>
+								<button key={link} onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
+								<ProgressBar className="wrapper"
 									barContainerClassName="container"
 									completedClassName="barCompleted"
 									labelClassName="label"
 									completed={100} />
-					</>)
-		} else {
-				return (
-					<>
-						<li key={link}><a href={link}>{link}</a></li>
-						<button key={link} onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
+							</>)
+					} else {
+						return (
+							<>
+								<li key={link}><a href={link}>{link}</a></li>
+								<button key={link} onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
 								<ProgressBar className="wrapper"
 									barContainerClassName="container"
 									labelClassName="label"
 									completed={0} />
-					</>)
-		}
-		})}
+							</>)
+					}
+				})}
 			</ul>
 			<button onClick={() => download()}>Download!</button>
 			<button onClick={() => setLinks([])}>Clear queue!</button>
-	</div>)
+		</div>)
 }
 
 export default Queue;
