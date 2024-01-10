@@ -1,11 +1,9 @@
 import { faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { downloadDir } from "@tauri-apps/api/path";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; import { downloadDir } from "@tauri-apps/api/path";
 import { invoke } from "@tauri-apps/api";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/api/notification";
 import { useState } from "react";
 import ApplicationDefault from "../types/main";
-import ProgressBar from "@ramonak/react-progress-bar";
 
 const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
 
@@ -15,7 +13,7 @@ const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
 
 	const statusHandler = (index: number) => {
 		const updatedCheckedState = downloadStatus.map((item: boolean, position: number) =>
-			position === index ? !item : item
+			(position === index) ? !item : (item === true) ? item : !item
 		);
 		setStatus(updatedCheckedState);
 		console.log(downloadStatus);
@@ -65,7 +63,7 @@ const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
 
 	return (
 		<div className="input">
-			<ul>
+			<ul className="queue">
 
 				{Links.map((link: any, index: number) => {
 					if (downloadStatus[index] === true) {
@@ -73,22 +71,15 @@ const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
 						return (
 							<>
 								<li key={link}><a href={link}>{link}</a></li>
-								<button key={link} onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
-								<ProgressBar className="wrapper"
-									barContainerClassName="container"
-									completedClassName="barCompleted"
-									labelClassName="label"
-									completed={100} />
+								<button key={link} className="delete_button" onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
+								<h1 className="progress">100%</h1>
 							</>)
 					} else {
 						return (
 							<>
 								<li key={link}><a href={link}>{link}</a></li>
-								<button key={link} onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
-								<ProgressBar className="wrapper"
-									barContainerClassName="container"
-									labelClassName="label"
-									completed={0} />
+								<button key={link} className="delete_button" onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
+								<h1 className="progress">0%</h1>
 							</>)
 					}
 				})}

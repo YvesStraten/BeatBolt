@@ -49,8 +49,8 @@
         "fullscreen": false,
         "resizable": false,
         "title": "Beat Bolt",
-        "width": 800,
-        "height": 600
+        "width": 600,
+        "height": 800
       }
     ]
   }

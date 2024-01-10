@@ -1,9 +1,12 @@
 import { useState } from "react";
-import "./App.css";
+import "./App.scss";
 import Form from "./components/Form";
 import Queue from "./components/Queue";
+import "./assets/Inter-VariableFont_slnt,wght.ttf"
+import "./assets/sf-ui-display-bold-58646a511e3d9.otf"
 
 const App = () => {
+
 	const [Links, setLinks] = useState<string[]>([]);
 
 	const [mode, setMode] = useState<string>("spot");
@@ -29,17 +32,18 @@ const App = () => {
 	}
 	return (
 		<>
+			<h1 id="main_title">BEAT BOLT</h1>
 			<nav>
 				<div id="main_container">
 					<div className={selected === "spot" ? "selector selected" : "selector"} onClick={() => selectHandler("spot")}>
-						<h1>SpotDL</h1>
+						<h1>SPOTDL</h1>
 					</div>
 					<div className={selected === "yt" ? "selector selected" : "selector"} onClick={() => selectHandler("yt")}>
-						<h1 >Yt-dlp</h1>
+						<h1 >YT-DLP</h1>
 					</div>
 
 					<div className={selected === "queue" ? "selector selected" : "selector"} onClick={() => selectHandler("queue")}>
-						<h1>Queue</h1>
+						<h1>QUEUE</h1>
 					</div>
 				</div>
 			</nav>
