@@ -1,28 +1,32 @@
 import { faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; import { downloadDir } from "@tauri-apps/api/path";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { downloadDir } from "@tauri-apps/api/path";
 import { invoke } from "@tauri-apps/api";
-import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/api/notification";
+import {
+	isPermissionGranted,
+	requestPermission,
+	sendNotification,
+} from "@tauri-apps/api/notification";
 import { useState } from "react";
 import ApplicationDefault from "../types/main";
 
 const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
-
 	const [downloadStatus, setStatus] = useState<boolean[]>(
-		new Array(Links.length).fill(false)
-	)
+		new Array(Links.length).fill(false),
+	);
 
 	const statusHandler = (index: number) => {
-		const updatedCheckedState = downloadStatus.map((item: boolean, position: number) =>
-			(position === index) ? !item : (item === true) ? item : !item
+		const updatedCheckedState = downloadStatus.map(
+			(item: boolean, position: number) =>
+				position === index ? !item : item === true ? item : !item,
 		);
 		setStatus(updatedCheckedState);
 		console.log(downloadStatus);
-	}
-
+	};
 
 	const deleteItem = (link: String) => {
-		setLinks(Links.filter((item: String) => item !== link))
-	}
+		setLinks(Links.filter((item: String) => item !== link));
+	};
 
 	const download = async () => {
 		console.log(mode);
@@ -30,21 +34,23 @@ const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
 		console.log(dir);
 		for (let i = 0; i <= Links.length - 1; i++) {
 			if (mode === "spot") {
-				invoke('download', { link: `${Links[i]}`, case: 0, path: `${dir}` })
-					.then((response) => {
-						console.log(response)
-						sendNotif(i + 1, Links.length)
-						statusHandler(i)
-					})
+				invoke("download", {
+					link: `${Links[i]}`,
+					case: 0,
+					path: `${dir}`,
+				}).then((response) => {
+					console.log(response);
+					sendNotif(i + 1, Links.length);
+					statusHandler(i);
+				});
 			} else {
-
-				invoke('download', { link: `${Links[i]}`, case: 1, path: `${dir}` })
+				invoke("download", { link: `${Links[i]}`, case: 1, path: `${dir}` })
 					// `invoke` returns a Promise
 					.then((response) => {
-						console.log(response)
-						sendNotif(i + 1, Links.length)
-						statusHandler(i)
-					})
+						console.log(response);
+						sendNotif(i + 1, Links.length);
+						statusHandler(i);
+					});
 			}
 		}
 
@@ -52,41 +58,63 @@ const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
 			let permissionGranted = await isPermissionGranted();
 			if (!permissionGranted) {
 				const permission = await requestPermission();
-				permissionGranted = permission === 'granted';
+				permissionGranted = permission === "granted";
 			}
 			if (permissionGranted) {
-				sendNotification({ title: 'Download progress', body: `Download ${currentItem}/${allItems}`, icon: "../../src-tauri/icons/32x32.png", sound: "default" });
+				sendNotification({
+					title: "Download progress",
+					body: `Download ${currentItem}/${allItems}`,
+					icon: "../../src-tauri/icons/32x32.png",
+					sound: "default",
+				});
 			}
-		}
-
-	}
+		};
+	};
 
 	return (
 		<div className="input">
 			<ul className="queue">
-
 				{Links.map((link: any, index: number) => {
 					if (downloadStatus[index] === true) {
-						console.log(`Progress 100% with index ${downloadStatus[index]}`)
+						console.log(`Progress 100% with index ${downloadStatus[index]}`);
 						return (
 							<>
-								<li key={link}><a href={link}>{link}</a></li>
-								<button key={link} className="delete_button" onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
+								<li key={link}>
+									<a href={link}>{link}</a>
+								</li>
+								<button
+									key={link}
+									className="delete_button"
+									onClick={() => deleteItem(link)}
+								>
+									<FontAwesomeIcon icon={faX} />
+								</button>
 								<h1 className="progress">100%</h1>
-							</>)
+							</>
+						);
 					} else {
 						return (
 							<>
-								<li key={link}><a href={link}>{link}</a></li>
-								<button key={link} className="delete_button" onClick={() => deleteItem(link)}><FontAwesomeIcon icon={faX} /></button>
+								<li key={link}>
+									<a href={link}>{link}</a>
+								</li>
+								<button
+									key={link}
+									className="delete_button"
+									onClick={() => deleteItem(link)}
+								>
+									<FontAwesomeIcon icon={faX} />
+								</button>
 								<h1 className="progress">0%</h1>
-							</>)
+							</>
+						);
 					}
 				})}
 			</ul>
-			<button onClick={() => download()}>Download!</button>
-			<button onClick={() => setLinks([])}>Clear queue!</button>
-		</div>)
-}
+			<h1 onClick={() => download()}>Download!</h1>
+			<h1 onClick={() => setLinks([])}>Clear queue!</h1>
+		</div>
+	);
+};
 
 export default Queue;
