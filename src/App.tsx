@@ -17,8 +17,8 @@ const App = () => {
 			</div>
 			<div id="main_container">
 				<div>
-					<h1>SPOTDL</h1>
-					<h1>YT-DLP</h1>
+					<h1>SPOTIFY</h1>
+					<h1>YOUTUBE</h1>
 					<h1 onClick={() => setSelected("queue")}>QUEUE</h1>
 				</div>
 			</div>
