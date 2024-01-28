@@ -9,110 +9,107 @@ import {
 } from "@tauri-apps/api/notification";
 import { useState } from "react";
 import ApplicationDefault from "../types/main";
+import { appWindow } from "@tauri-apps/api/window";
 
-const Queue = ({ Links, setLinks, mode }: ApplicationDefault) => {
-	const [downloadStatus, setStatus] = useState<boolean[]>(
-		new Array(Links.length).fill(false),
+const Queue = ({ Links, setLinks }: ApplicationDefault) => {
+	const [downloadStatus, setStatus] = useState<number[]>(
+		new Array(Links.length).fill(0),
 	);
 
-	const statusHandler = (index: number) => {
-		const updatedCheckedState = downloadStatus.map(
-			(item: boolean, position: number) =>
-				position === index ? !item : item === true ? item : !item,
-		);
-		setStatus(updatedCheckedState);
-		console.log(downloadStatus);
+	const [listening, setListening] = useState<boolean>(false);
+
+	/* 	TODO: PROGRESS BAR */
+	const statusHandler = (index: number, progress: number) => {
+		const newStatus = downloadStatus.map((status, i) => {
+			console.log(status);
+			console.log(i);
+			console.log(progress);
+			if (i === index - 1) {
+				return progress;
+			} else {
+				return status;
+			}
+		});
+
+		console.log(newStatus);
+
+		setStatus(newStatus);
 	};
 
 	const deleteItem = (link: String) => {
 		setLinks(Links.filter((item: String) => item !== link));
 	};
 
-	const download = async () => {
-		console.log(mode);
-		const dir = await downloadDir();
-		console.log(dir);
-		for (let i = 0; i <= Links.length - 1; i++) {
-			if (mode === "spot") {
-				invoke("download", {
-					link: `${Links[i]}`,
-					case: 0,
-					path: `${dir}`,
-				}).then((response) => {
-					console.log(response);
-					sendNotif(i + 1, Links.length);
-					statusHandler(i);
-				});
-			} else {
-				invoke("download", { link: `${Links[i]}`, case: 1, path: `${dir}` })
-					// `invoke` returns a Promise
-					.then((response) => {
-						console.log(response);
-						sendNotif(i + 1, Links.length);
-						statusHandler(i);
-					});
-			}
+	const listenToEventIfNeeded = async (event: string) => {
+		if (listening) {
+			return await Promise.resolve();
 		}
 
-		const sendNotif = async (currentItem: number, allItems: number) => {
-			let permissionGranted = await isPermissionGranted();
-			if (!permissionGranted) {
-				const permission = await requestPermission();
-				permissionGranted = permission === "granted";
-			}
-			if (permissionGranted) {
-				sendNotification({
-					title: "Download progress",
-					body: `Download ${currentItem}/${allItems}`,
-					icon: "../../src-tauri/icons/32x32.png",
-					sound: "default",
-				});
-			}
-		};
+		return await appWindow
+			.listen(event, (e) => {
+				console.log(e);
+				const index: number | unknown = e.payload.index + 1;
+				const status: number | unknown = e.payload.progress;
+				sendNotif(index, Links.length);
+				statusHandler(index as number, status as number);
+			})
+			.then(() => setListening(true));
+	};
+
+	const download = async () => {
+		const dir = await downloadDir();
+		await listenToEventIfNeeded("download://progress");
+
+		invoke("processqueue", {
+			links: Links,
+			path: dir,
+		});
+	};
+	const sendNotif = async (currentItem: number | unknown, allItems: number) => {
+		let permissionGranted = await isPermissionGranted();
+		if (!permissionGranted) {
+			const permission = await requestPermission();
+			permissionGranted = permission === "granted";
+		}
+		if (permissionGranted) {
+			sendNotification({
+				title: "Download progress",
+				body: `Download ${currentItem}/${allItems}`,
+				icon: "../../src-tauri/icons/32x32.png",
+				sound: "default",
+			});
+		}
 	};
 
 	return (
 		<div className="input">
 			<ul className="queue">
 				{Links.map((link: any, index: number) => {
-					if (downloadStatus[index] === true) {
-						console.log(`Progress 100% with index ${downloadStatus[index]}`);
-						return (
-							<>
-								<li key={link}>
-									<a href={link}>{link}</a>
-								</li>
-								<button
-									key={link}
-									className="delete_button"
-									onClick={() => deleteItem(link)}
-								>
-									<FontAwesomeIcon icon={faX} />
-								</button>
-								<h1 className="progress">100%</h1>
-							</>
-						);
-					} else {
-						return (
-							<>
-								<li key={link}>
-									<a href={link}>{link}</a>
-								</li>
-								<button
-									key={link}
-									className="delete_button"
-									onClick={() => deleteItem(link)}
-								>
-									<FontAwesomeIcon icon={faX} />
-								</button>
-								<h1 className="progress">0%</h1>
-							</>
-						);
-					}
+					return (
+						<div key={link}>
+							<li>
+								<a href={link}>{link}</a>
+							</li>
+							<button
+								className="delete_button"
+								onClick={() => deleteItem(link)}
+							>
+								<FontAwesomeIcon icon={faX} />
+							</button>
+							<h1 className="progress">{downloadStatus[index]}%</h1>
+						</div>
+					);
 				})}
 			</ul>
 			<h1 onClick={() => download()}>Download!</h1>
-			<h1 onClick={() => setLinks([])}>Clear queue!</h1>
+			<h1
+				onClick={() => {
+					setLinks([]);
+					setStatus([]);
+				}}
+			>
+				Clear queue!
+			</h1>
 		</div>
 	);
 };
