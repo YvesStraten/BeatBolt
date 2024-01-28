@@ -18,25 +18,24 @@
           buildInputs = with pkgs;
             [
               nodejs_21
+              spotdl
               rustc
               rustfmt
               cargo
             ]
-            ++ (
-              if pkgs.stdenv.isDarwin
-              then
-                with pkgs;
-                [
-                  clang
-                  darwin.libiconv
-                ]
-                ++ (with pkgs.darwin.apple_sdk.frameworks; [
-                  Carbon
-                  WebKit
-                  Cocoa
-                ])
-              else [ ]
-            );
+            ++ lib.optionals
+              stdenv.isDarwin
+              (with pkgs.darwin; [
+                clang
+                libiconv
+              ])
+            ++ (with pkgs.darwin.apple_sdk.frameworks; [
+              Carbon
+              WebKit
+              Cocoa
+            ]);
+
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath buildInputs;
         };
       });
     };
