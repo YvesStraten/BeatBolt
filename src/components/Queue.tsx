@@ -11,6 +11,12 @@ import { useState } from "react";
 import ApplicationDefault from "../types/main";
 import { appWindow } from "@tauri-apps/api/window";
 
+interface ProgressPayload {
+	id: string;
+	index: number;
+	progress: number;
+}
+
 const Queue = ({ Links, setLinks }: ApplicationDefault) => {
 	const [downloadStatus, setStatus] = useState<number[]>(
 		new Array(Links.length).fill(0),
@@ -46,7 +52,7 @@ const Queue = ({ Links, setLinks }: ApplicationDefault) => {
 		}
 
 		return await appWindow
-			.listen(event, (e) => {
+			.listen<ProgressPayload>(event, (e) => {
 				console.log(e);
 				const index: number | unknown = e.payload.index + 1;
 				const status: number | unknown = e.payload.progress;
