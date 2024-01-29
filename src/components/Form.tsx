@@ -10,6 +10,9 @@ const Form = ({ Links, setLinks }: ApplicationDefault) => {
 	};
 
 	const updateLinks = () => {
+		if(input === ""){
+			return;
+		}
 		setLinks([...Links, input]);
 		console.log(Links);
 		setInput("");
