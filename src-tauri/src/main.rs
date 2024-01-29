@@ -1,7 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::process::Command;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+    path::PathBuf,
+    process::Command,
+};
 
 use serde::Serialize;
 use tauri::{api::dialog, CustomMenuItem, Menu, MenuItem, Runtime, Submenu, Window};
@@ -17,7 +22,7 @@ struct ProgressPayload {
 async fn processqueue<R: Runtime>(
     window: Window<R>,
     links: Vec<String>,
-    path: &str,
+    path: PathBuf,
 ) -> Result<(), ()> {
     for (index, link) in links.iter().enumerate() {
         if link.contains("youtube") {
@@ -94,8 +99,43 @@ fn main() {
         .on_menu_event(|event| match event.menu_item_id() {
             "import" => dialog::FileDialogBuilder::default().pick_file(|path| match path {
                 Some(path) => {
-                    let path = path.to_string_lossy();
-                    println!("{path}")
+                    let file = File::open(path).expect("Could not read file");
+                    let lines = BufReader::new(file).lines();
+
+                    let mut vector: Vec<String> = Vec::new();
+
+                    let newpath = tauri::api::path::download_dir().expect("Did not work");
+                    for line in lines {
+                        if let Ok(_line) = line {
+                            println!("{_line}");
+                            vector.push(_line);
+                        }
+                    }
+
+                    for link in vector.iter() {
+                        if link.contains("spotify") {
+                            let download = Command::new("spotdl")
+                                .arg(&link)
+                                .current_dir(&newpath)
+                                .status()
+                                .expect("Command did not spawn");
+                            println!("{download}");
+                        } else if link.contains("youtube") {
+                            let download = Command::new("yt-dlp")
+                                .arg(&link)
+                                .current_dir(&newpath)
+                                .status()
+                                .expect("Command did not spawn");
+                            println!("{download}");
+                        } else {
+                            let download = Command::new("yt-dlp")
+                                .arg(&link)
+                                .current_dir(&newpath)
+                                .status()
+                                .expect("Command did not spawn");
+                            println!("{download}");
+                        }
+                    }
                 }
                 _ => println!("none"),
             }),
