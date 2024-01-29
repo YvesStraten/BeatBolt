@@ -2,13 +2,14 @@ import { useState } from "react";
 import "./App.scss";
 import Form from "./components/Form";
 import Queue from "./components/Queue";
-import "./assets/Inter-VariableFont_slnt,wght.ttf";
-import "./assets/sf-ui-display-bold-58646a511e3d9.otf";
+import "./assets/strasua.otf";
 
 const App = () => {
 	const [Links, setLinks] = useState<string[]>([]);
 
-	const [selected, setSelected] = useState<string>("");
+	const [queueOpen, queueToggle] = useState<boolean>(false);
+
+	const selectors = ["SPOTIFY", "YOUTUBE", "QUEUE"];
 
 	return (
 		<>
@@ -17,13 +18,24 @@ const App = () => {
 			</div>
 			<div id="main_container">
 				<div>
-					<h1>SPOTIFY</h1>
-					<h1>YOUTUBE</h1>
-					<h1 onClick={() => setSelected("queue")}>QUEUE</h1>
+					{selectors.map((selector) => (
+						<h1
+							className="selector"
+							onClick={() => {
+								if (queueOpen) {
+									queueToggle(false);
+								} else {
+									queueToggle(true);
+								}
+							}}
+						>
+							{selector}
+						</h1>
+					))}
 				</div>
 			</div>
 
-			{selected === "queue" ? (
+			{queueOpen === true ? (
 				<Queue Links={Links} setLinks={setLinks} />
 			) : (
 				<Form Links={Links} setLinks={setLinks} />

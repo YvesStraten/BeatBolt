@@ -1,13 +1,21 @@
+@font-face {
+  font-family: "strasua";
+  src:
+    local("strasua"),
+    url(./assets/strasua.otf) format("opentype");
+}
+
 html {
   background-color: rgb(239, 217, 101);
   color: black;
-  font-family: "Inter";
+  font-family: "Arial Rounded MT Bold";
 }
 
 #main_title {
   font-size: 50px;
   margin-left: 7%;
-  font-family: "SF UI DISPLAY";
+  width: 40%;
+  font-family: "strasua";
   display: flex;
   align-items: center;
   justify-content: left;
@@ -27,9 +35,7 @@ h1 {
 }
 
 .selector {
-  color: black;
-  font-size: 12px;
-
+  font-size: 20px;
   &:hover {
     cursor: pointer;
   }
@@ -47,6 +53,7 @@ h1 {
 
 input {
   background-color: #1c1c1c;
+  font-family: "Arial Rounded MT Bold";
   color: white;
   font-size: 10px;
   padding: 15px;
@@ -86,7 +93,7 @@ a {
   margin-left: auto;
   cursor: pointer;
 
-  font-size: 18px;
+  font-size: 13px;
 }
 
 /* This is for the progress bar */
