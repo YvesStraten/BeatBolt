@@ -9,7 +9,7 @@ use std::{
 };
 
 use serde::Serialize;
-use tauri::{api::dialog, CustomMenuItem, Menu, MenuItem, Runtime, Submenu, Window};
+use tauri::{api::{dialog, notification::Notification}, CustomMenuItem, Menu, MenuItem, Runtime, Submenu, Window};
 
 #[derive(Clone, Serialize)]
 struct ProgressPayload {
@@ -112,7 +112,8 @@ fn main() {
                         }
                     }
 
-                    for link in vector.iter() {
+                    let size = vector.len();
+                    for (index, link) in vector.iter().enumerate() {
                         if link.contains("spotify") {
                             let download = Command::new("spotdl")
                                 .arg(&link)
@@ -135,6 +136,14 @@ fn main() {
                                 .expect("Command did not spawn");
                             println!("{download}");
                         }
+
+                        let done = index + 1;
+                        Notification::new("com.yvess.BeatBolt")
+                            .title("Download status")
+                            .body(format!("{done}/{size}"))
+                            .sound("Default")
+                            .show()
+                            .expect("Could not send notif");
                     }
                 }
                 _ => println!("none"),
