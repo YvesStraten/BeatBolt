@@ -21,6 +21,7 @@
               spotdl
               rustc
               rustfmt
+              rust-analyzer
               cargo
             ]
             ++ lib.optionals
