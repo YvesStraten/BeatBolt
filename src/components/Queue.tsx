@@ -26,20 +26,20 @@ const Queue = ({ Links, setLinks }: ApplicationDefault) => {
 
 	/* 	TODO: PROGRESS BAR */
 	const statusHandler = (index: number, progress: number) => {
-		const newStatus = downloadStatus.map((status, i) => {
-			console.log(status);
-			console.log(i);
-			console.log(progress);
-			if (i === index - 1) {
-				return progress;
+		let newArr = [];
+		let current = index - 1;
+		for (let i = 0; i < downloadStatus.length; i++) {
+			console.log(`current arr index ${i}, window emit index ${current}`);
+			if (i === current) {
+				newArr[i] = progress;
 			} else {
-				return status;
+				newArr[i] = 100;
 			}
-		});
+		}
 
-		console.log(newStatus);
+		console.log(newArr);
 
-		setStatus(newStatus);
+		setStatus(newArr);
 	};
 
 	const deleteItem = (link: String) => {
@@ -75,6 +75,8 @@ const Queue = ({ Links, setLinks }: ApplicationDefault) => {
 		invoke("processqueue", {
 			links: Links,
 			path: dir,
+		}).then(() => {
+			setLinks([]);
 		});
 	};
 	const sendNotif = async (currentItem: number | unknown, allItems: number) => {
