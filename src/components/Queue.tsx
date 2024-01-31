@@ -66,6 +66,12 @@ const Queue = ({ Links, setLinks }: ApplicationDefault) => {
 		const dir = await downloadDir();
 		await listenToEventIfNeeded("download://progress");
 
+		sendNotification({
+			title: "Download status",
+			body: "Download has started",
+			sound: "default",
+		});
+
 		invoke("processqueue", {
 			links: Links,
 			path: dir,

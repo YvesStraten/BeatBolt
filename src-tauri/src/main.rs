@@ -9,7 +9,10 @@ use std::{
 };
 
 use serde::Serialize;
-use tauri::{api::{dialog, notification::Notification}, CustomMenuItem, Menu, MenuItem, Runtime, Submenu, Window};
+use tauri::{
+    api::{dialog, notification::Notification},
+    CustomMenuItem, Menu, MenuItem, Runtime, Submenu, Window,
+};
 
 #[derive(Clone, Serialize)]
 struct ProgressPayload {
@@ -90,7 +93,12 @@ fn main() {
 
     let submenu = Submenu::new(
         "File",
-        Menu::new().add_item(import).add_native_item(MenuItem::Quit),
+        Menu::new()
+            .add_item(import)
+            .add_native_item(MenuItem::Quit)
+            .add_native_item(MenuItem::Copy)
+            .add_native_item(MenuItem::SelectAll)
+            .add_native_item(MenuItem::Paste),
     );
     let menu = Menu::new().add_submenu(submenu);
 
@@ -139,8 +147,8 @@ fn main() {
 
                         let done = index + 1;
                         Notification::new("com.yvess.BeatBolt")
-                            .title("Download status")
-                            .body(format!("{done}/{size}"))
+                            .title("Queue status")
+                            .body(format!("{done} out of {size}"))
                             .sound("Default")
                             .show()
                             .expect("Could not send notif");
